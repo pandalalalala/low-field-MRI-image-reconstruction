@@ -2,15 +2,10 @@
 clc;
 clear all;
 close all;
-%% = constants = (deleted)
-Noise_level=-40; % noise level in time domain (dB)
-
+%moved into config.m
 %% get signals from simulation
-n_image = 4;
-Obj_model = brain_images_may_2018(n_image);%phantomBW;
-Obj_model(~head_polygon(Obj_model,0.2)) = 0;
-% [E_M, Sign, Sign_time]= sig_gen(Obj_model); % outdated function
-[X,Y] = meshgrid(-37:1:36, -37:1:36); % define FOV
+config
+images = import_images_june_2018(image_path, imformat, nlimit, ifresize, numrows, numcols);
 E_M= enc_gen(X,Y);
 [Sign, Sign_time] = sig_gen_simul(Obj_model,E_M);
 
