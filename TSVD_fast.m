@@ -1,6 +1,7 @@
 function recon_image = TSVD_fast(E_M2,Sign)
-    tic
-    r_near=Sign*E_M2;
-    recon_image=normalize_range(abs(r_near));
+    tic;
+    r_near=E_M2*Sign;
+    recon_image=normalize(abs(r_near),'range');
+    disp('TSVD method done!')
     toc
 end

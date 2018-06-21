@@ -1,47 +1,30 @@
-function E_M = enc_gen(X,Y)
+function E_M = enc_gen(X,Y, B0_complete, dt, Sample_N, N_angle, coil_total, Elev, r, Segment, I0, phi0, Pc, Azi, CurrentDir)
 
-% constants
-fs=1e5; %sample frequency
-dt=1/fs; %sample time
-Sample_N=26;% Sample Number
-
-% the following parameters could be likely changed
-N_angle=50;% Rotating angle
-coil_n=8;%Coil Number
-
-
-load B0_complete_measurement.mat % Input Magnetic Field
 %area used to mri.
 [x_range, y_range] = size(X);% OR Y
 Num_all_points = numel(X); % OR Y
-[B1x, B1y, B1z, Pos,~]=Coil_Sensitivity(X,Y);
 
-% add B1 mask % size(B1x) = 5476 * 8
-COIL_N=length(Pos(:,1))-(8-coil_n);
-
-B1X=zeros(x_range,y_range,COIL_N);
-B1Y = B1X;
-B1Z = B1X;
-
-for C_n=1:COIL_N
-    B1X(:,:,C_n)=reshape(B1x(C_n,:),x_range,y_range);
-    B1Y(:,:,C_n)=reshape(B1y(C_n,:),x_range,y_range);
-    B1Z(:,:,C_n)=reshape(B1z(C_n,:),x_range,y_range);
+% single coil calculation
+for n = 1:coil_total
+    [B1x(:,n),B1y(:,n),B1z(:,n),CoilTraj(:,:,n)]=CoilBiotSavart_SUTD2018(X,Y,Pc(n,:),Azi(1,n),Elev,r,Segment,CurrentDir(1,n),I0,phi0);
 end
 
-C_n=2;
-% figure, title(sprintf('Coil%d',C_n));hold on
-% X_mri = X;
-% Y_mri = Y;
-% subplot 221, pcolor(X_mri,Y_mri,sqrt(B1X(:,:,C_n).^2+B1Y(:,:,C_n).^2));         shading flat;hold on, quiver(X_mri(1:10:N_x_mri,1:10:N_y_mri),Y_mri(1:10:N_x_mri,1:10:N_y_mri), B1X(1:10:N_x_mri,1:10:N_y_mri,C_n), B1Y(1:10:N_x_mri,1:10:N_y_mri,C_n),1,'r');title('abs(X+Y)','fontsize',12); xlabel('x(mm)','fontsize',12); ylabel('y(mm)','fontsize',12);colorbar;
-% subplot 222, pcolor(X_mri,Y_mri,(B1X(:,:,C_n)));                                shading flat;title('(X)','fontsize',12); xlabel('x(mm)','fontsize',12); ylabel('y(mm)','fontsize',12);colorbar;
-% subplot 223, pcolor(X_mri,Y_mri,(B1Y(:,:,C_n)));                                shading flat;title('(Y)','fontsize',12);xlabel('x(mm)','fontsize',12);ylabel('y(mm)','fontsize',12);colorbar;
-% subplot 224, pcolor(X_mri,Y_mri,(B1Z(:,:,C_n)));                                shading flat;title('(Z)','fontsize',12); xlabel('x(mm)','fontsize',12); ylabel('y(mm)','fontsize',12);colorbar;
+% cal 8-coil aggregate
+B1X =zeros(x_range*y_range,1);
+B1Y =zeros(x_range*y_range,1);
+B1Z =zeros(x_range*y_range,1);
+for n=1:coil_total
+    [B1xx(:,n),B1yy(:,n),B1zz(:,n),CoilTraj(:,:,n)]=CoilBiotSavart_SUTD2018(X,Y,Pc(n,:),Azi(1,n),Elev,r,Segment,CurrentDir(1,n),I0,phi0);
+    B1X(:,1) = B1X(:,1)+B1xx(:,n);
+    B1Y(:,1) = B1Y(:,1)+B1yy(:,n);
+    B1Z(:,1) = B1Z(:,1)+B1zz(:,n);
+end
+
 
 % form encoding matrix
-NUMB_EQ=N_angle*Sample_N*COIL_N;
-E_M(Num_all_points,NUMB_EQ)=0;
-% E_M = gpuArray(E_M);
+NUMB_EQ = N_angle*Sample_N*coil_total;
+E_M(Num_all_points,NUMB_EQ) = 0;
+
 for n_an=1:N_angle
     angle = 2*(n_an-1)*pi/N_angle; % rotating anticlockwise rangement: pi
 
@@ -53,16 +36,16 @@ for n_an=1:N_angle
     B1Y_r = B1Y-(B1X*cos(angle)+B1Y*sin(angle))*sin(angle);
 
     % B1 when the component of B1 || B0 is removed
-    B1_r = B1X_r-1i.*B1Y_r;
-    B1_array = reshape(B1_r,Num_all_points,1,COIL_N);
+    B1_array = B1X_r-1i.*B1Y_r;
+    %B1_array = reshape(B1_r,Num_all_points,1,coil_total);
 
-    w0 = 1e9* B0_array.*2*pi; %*gamma is included in the measurement
+    w0 = 1e6* B0_array.*2*pi; %*gamma is included in the measurement
 
-    for c_n = 1:COIL_N
-        for t_n = 1:Sample_N
-            t = (t_n-1)*dt;
-            nn = (n_an-1)*Sample_N*COIL_N+(c_n-1)*Sample_N+t_n;
-            E_M(:,nn) = w0.*( -real(B1_array(:,c_n)).*sin(t*w0)+imag(B1_array(:,c_n)).*cos(t*w0));      % original
+    for cn = 1:coil_total
+        for sn = 1:Sample_N
+            t = (sn-1)*dt;
+            nn = (n_an-1)*Sample_N*coil_total+(cn-1)*Sample_N+sn;
+            E_M(:,nn) = w0.*( -real(B1_array(cn)).*sin(t*w0)+imag(B1_array(cn)).*cos(t*w0));      % original/since B1_array is now a column vector, the index should be set accordingly
 
             % the encoding ter  m: [B1_r0.*exp(-1i.*w0.*t)]
             % the imag part of [B1_r0.*exp(-1i.*w0.*t)] gives the same

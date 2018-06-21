@@ -1,5 +1,5 @@
 function [recon_image,error_IT_nn]=Kaczmarz_su(A,b,lambda,maxIter)
-% tic;
+tic;
 
 if nargin < 4
     lambda=1;
@@ -17,14 +17,15 @@ for  Iter=1:1:maxIter
     for nn=1:m_unk
         x_kn=x_k+lambda*((b(k)-A(k,:)*x_k)/(norm(A(k,:),2))^2)*A(k,:)';
         x_k=x_kn;
-        k=rem(k+1,m_unk)+1
+        k=rem(k+1,m_unk)+1;
         x=x_kn;
     end
-    err = norm(b-A*x,2)/norm(b,2)
+    err = norm(b-A*x,2)/norm(b,2);
 %     error(Iter)=err;
 end
 x = x';
-recon_image=normalize_range(x);
+recon_image=normalize(x,'range');
 error_IT_nn = 0;%min(error);
-% toc
+disp('Kaczmarz_su method done!')
+toc
 end
