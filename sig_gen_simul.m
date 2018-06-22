@@ -1,5 +1,5 @@
 % simulates signal generating: s = E*m
-function [Sign, Sign_time, M0] = sig_gen_simul(Obj_model,E_M, dX, dY, dZ, gamma, Plank_h, T, k, N_per, N_angle, coil_total, Sample_N)
+function [Sign, Sign_time] = sig_gen_simul(Obj_model,E_M, dX, dY, dZ, gamma, Plank_h, T, k, N_per, N_angle, coil_total, Sample_N)
 
 Obj_model_n = reshape(Obj_model,numel(Obj_model),1);
 Volume = dX*dY*dZ*1e-9;

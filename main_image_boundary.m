@@ -5,10 +5,13 @@ close all;
 %% get signals from simulation
 config
 images = import_images_june_2018(image_path, imformat, nlimit, ifresize, numrows, numcols);
-% E_M= enc_gen(X,Y);
-[Sign, Sign_time] = sig_gen_simul(Obj_model,E_M);
+ Obj_model = double(images{n_image});
+%     E_M = enc_gen(X,Y, B0_complete, dt, Sample_N, N_angle, coil_total,...
+%     Elev, r, Segment, I0, phi0, Pc, Azi, CurrentDir); % the encoding
+%     matrix is problemetic on 21st June.
+[Sign, Sign_time] = sig_gen_simul(Obj_model,E_M, dX, dY, dZ, gamma, Plank_h, T, k, N_per, N_angle, coil_total, Sample_N);
 %% image frame
-pic_size = sqrt(size(E_M,1)); % assume the reconstructed image to be squre
+pic_size = sqrt(size(E_M,2)); % assume the reconstructed image to be squre
 [X_mri, Y_mri] = meshgrid(-pic_size/2+.5:pic_size/2-.5,-pic_size/2+.5:pic_size/2-.5);
 
 %% === Added noise ===
