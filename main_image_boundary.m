@@ -15,7 +15,7 @@ pic_size = sqrt(size(E_M,2)); % assume the reconstructed image to be squre
 [X_mri, Y_mri] = meshgrid(-pic_size/2+.5:pic_size/2-.5,-pic_size/2+.5:pic_size/2-.5);
 
 %% === Added noise ===
-Sign = add_noise(Sign, Sign_time, Sample_N, N_angle, Noise_level)
+Sign = add_noise(Sign, Sign_time, Sample_N, N_angle, Noise_level);
 
 %% Least squares method 1
 [recon_image_LSM,error_LMS_nn] = LSMethod_gpu(E_M,Sign);
@@ -84,7 +84,7 @@ function  [recon_image,error_LMS_nn] = LSMethod_boundary(E_M,Sign)
     [pre_recon_image_IT,~]=Kaczmarz_su(E_M,Sign,1,3); % lambda = 1, max iteration is 2
     pic_size = sqrt(size(E_M,2)); % assume the reconstructed image to be squre
     picture_IT = reshape(pre_recon_image_IT ,pic_size,pic_size);
-    head_area = reshape(head_polygon(picture_IT,0.4),1,pic_size*pic_size);
+    head_area = reshape(head_polygon(picture_IT,0.55),1,pic_size*pic_size);
     
     E_M(:, ~head_area) = [];
     
@@ -107,7 +107,7 @@ function  [recon_image,error_LMS_nn] = Kaczmarz_su_boundary(E_M,Sign)
     [pre_recon_image_IT,~]=Kaczmarz_su(E_M,Sign,1,3); % lambda = 1, max iteration is 2
     pic_size = sqrt(size(E_M,2)); % assume the reconstructed image to be squre
     picture_IT = reshape(pre_recon_image_IT ,pic_size,pic_size);
-    head_area = reshape(head_polygon(picture_IT,0.4),1,pic_size*pic_size);
+    head_area = reshape(head_polygon(picture_IT,0.55),1,pic_size*pic_size);
     
     E_M(:, ~head_area) = [];
     
@@ -130,7 +130,7 @@ function  [recon_image,error_LMS_nn] = TSVD_boundary(E_M,Sign)
     [pre_recon_image_IT,~]=Kaczmarz_su(E_M,Sign,1,3); % lambda = 1, max iteration is 2
     pic_size = sqrt(size(E_M,2)); % assume the reconstructed image to be squre
     picture_IT = reshape(pre_recon_image_IT ,pic_size,pic_size);
-    head_area = reshape(head_polygon(picture_IT,0.4),1,pic_size*pic_size);
+    head_area = reshape(head_polygon(picture_IT,0.55),1,pic_size*pic_size);
     
     E_M(:, ~head_area) = [];
     
