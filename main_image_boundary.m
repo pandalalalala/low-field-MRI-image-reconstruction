@@ -76,72 +76,48 @@ subplot 248,pcolor(X_mri,Y_mri,picture_TSVD2);                  shading flat;tit
 
 
 
-
-%% =========Least squares method 2=========
-function  [recon_image,error_LMS_nn] = LSMethod_boundary(E_M,Sign)
-    tic;
-    % iteration Kaczmarz_su
+%% regulation functions
+function [head_area, E_M] = preregulateSimpleBoundary(E_M,Sign)
     [pre_recon_image_IT,~]=Kaczmarz_su(E_M,Sign,1,3); % lambda = 1, max iteration is 2
     pic_size = sqrt(size(E_M,2)); % assume the reconstructed image to be squre
     picture_IT = reshape(pre_recon_image_IT ,pic_size,pic_size);
-    head_area = reshape(head_polygon(picture_IT,0.55),1,pic_size*pic_size);
-    
+    head_area = reshape(head_polygon(picture_IT,0.55),1,pic_size*pic_size);    
     E_M(:, ~head_area) = [];
-    
-    [pre_recon_image,error_LMS_nn] = LSMethod_gpu(E_M,Sign);    
+end
 
-    
+function recon_image = postregulateSimpleBoundary(head_area, pre_recon_image)
     [~,head_col,~] = find(head_area~=0);
     recon_image = double(head_area)*0;
     disp(length(pre_recon_image))
     for i = 1:length(pre_recon_image)
         recon_image(head_col(i)) = pre_recon_image(i);
     end
-    toc;
 end
 
-%% =========Least squares method 2=========
+%% least squares method with boundary regulation
+function  [recon_image,error_LMS_nn] = LSMethod_boundary(E_M,Sign)
+    tic;    
+    [head_area, E_M] = preregulateSimpleBoundary(E_M,Sign);
+    [pre_recon_image,error_LMS_nn] = LSMethod_gpu(E_M,Sign);
+    recon_image = postregulateSimpleBoundary(head_area, pre_recon_image);
+    toc;
+end
+%% Kaczmarz_su method with boundary regulation
 function  [recon_image,error_LMS_nn] = Kaczmarz_su_boundary(E_M,Sign)
     tic;
     % iteration Kaczmarz_su
-    [pre_recon_image_IT,~]=Kaczmarz_su(E_M,Sign,1,3); % lambda = 1, max iteration is 2
-    pic_size = sqrt(size(E_M,2)); % assume the reconstructed image to be squre
-    picture_IT = reshape(pre_recon_image_IT ,pic_size,pic_size);
-    head_area = reshape(head_polygon(picture_IT,0.55),1,pic_size*pic_size);
-    
-    E_M(:, ~head_area) = [];
-    
+    [head_area, E_M] = preregulateSimpleBoundary(E_M,Sign);    
     [pre_recon_image,error_LMS_nn] = Kaczmarz_su(E_M,Sign,1,10);    
-
-    
-    [~,head_col,~] = find(head_area~=0);
-    recon_image = double(head_area)*0;
-    disp(length(pre_recon_image))
-    for i = 1:length(pre_recon_image)
-        recon_image(head_col(i)) = pre_recon_image(i);
-    end
+    recon_image = postregulateSimpleBoundary(head_area, pre_recon_image);
     toc;
 end
 
-%% =========TSVD squares method boundary=========
+%% TSVD method with boundary regulation
 function  [recon_image,error_LMS_nn] = TSVD_boundary(E_M,Sign)
     tic;
     % iteration Kaczmarz_su
-    [pre_recon_image_IT,~]=Kaczmarz_su(E_M,Sign,1,3); % lambda = 1, max iteration is 2
-    pic_size = sqrt(size(E_M,2)); % assume the reconstructed image to be squre
-    picture_IT = reshape(pre_recon_image_IT ,pic_size,pic_size);
-    head_area = reshape(head_polygon(picture_IT,0.55),1,pic_size*pic_size);
-    
-    E_M(:, ~head_area) = [];
-    
-    [pre_recon_image,error_LMS_nn] = TSVD(E_M,Sign);    
-
-    
-    [~,head_col,~] = find(head_area~=0);
-    recon_image = double(head_area)*0;
-    disp(length(pre_recon_image))
-    for i = 1:length(pre_recon_image)
-        recon_image(head_col(i)) = pre_recon_image(i);
-    end
+    [head_area, E_M] = preregulateSimpleBoundary(E_M,Sign);    
+    [pre_recon_image,error_LMS_nn] = TSVD(E_M,Sign);   
+    recon_image = postregulateSimpleBoundary(head_area, pre_recon_image);
     toc;
 end
