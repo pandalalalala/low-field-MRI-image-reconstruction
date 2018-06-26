@@ -9,6 +9,7 @@ Obj_model = double(images{1});
 %     E_M = enc_gen(X,Y, B0_complete, dt, Sample_N, N_angle, coil_total,...
 %     Elev, r, Segment, I0, phi0, Pc, Azi, CurrentDir); % the encoding
 %     matrix is problemetic on 21st June.
+Obj_model = normalize(Obj_model);
 [Sign, Sign_time] = sig_gen_simul(Obj_model,E_M, dX, dY, dZ, gamma, Plank_h, T, k, N_per, N_angle, coil_total, Sample_N);
 %% image frame
 pic_size = sqrt(size(E_M,2)); % assume the reconstructed image to be squre
@@ -20,14 +21,16 @@ Sign = add_noise(Sign, Sign_time);
 %% Least squares method 1
 [recon_image_LSM,error_LMS_nn] = LSMethod_gpu(E_M,Sign);
 picture_LSM = reshape(recon_image_LSM ,pic_size,pic_size);
-
+[peaksnrLSM,snrLSM] = psnr(picture_LSM,Obj_model);
 %% iteration Kaczmarz_su
 [recon_image_IT,error_IT_nn]=Kaczmarz_su(E_M,Sign,1,10); % lambda = 1, max iteration is 10
 picture_IT = reshape(recon_image_IT ,pic_size,pic_size);
+[peaksnrIT,snrIT] = psnr(picture_IT,Obj_model);
 
 %% TSVD
 [recon_image_TSVD,error_TSVD_nn] = TSVD(E_M,Sign);
 picture_TSVD = reshape(recon_image_TSVD ,pic_size,pic_size);
+[peaksnrTSVD,snrTSVD] = psnr(picture_TSVD,Obj_model);
 
 
 
@@ -35,14 +38,17 @@ picture_TSVD = reshape(recon_image_TSVD ,pic_size,pic_size);
 %% Least squares method boundary
 [recon_image_LSM,error_LMS_nn] = LSMethod_boundary(E_M,Sign);
 picture_LSM2 = reshape(recon_image_LSM ,pic_size,pic_size);
+[peaksnrLSM2,snrLSM2] = psnr(picture_LSM2,Obj_model);
 
 %% iteration Kaczmarz_su boundary
 [recon_image_IT,error_IT_nn]=Kaczmarz_su_boundary(E_M,Sign); % lambda = 1, max iteration is 10
 picture_IT2 = reshape(recon_image_IT ,pic_size,pic_size);
+[peaksnrIT2,snrIT2] = psnr(picture_IT2,Obj_model);
 
 %% TSVD
 [recon_image_TSVD,error_TSVD_nn] = TSVD_boundary(E_M,Sign);
 picture_TSVD2 = reshape(recon_image_TSVD ,pic_size,pic_size);
+[peaksnrTSVD2,snrTSVD2] = psnr(picture_TSVD2,Obj_model);
 
 %% figures
 figure
