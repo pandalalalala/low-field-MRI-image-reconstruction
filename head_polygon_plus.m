@@ -1,5 +1,5 @@
 %% this function takes a image matrix and return the matrix index to specify the points of head area
-function head_area = head_polygon_plus(image_in, threshold, loos_parameter,polyfit_order)
+function [head_area,pre_image_out] = head_polygon_plus(image_in, threshold, loos_parameter,polyfit_order)
 a = size(image_in,1);
 b = size(image_in,2);
 [X,Y] = meshgrid(1:a,1:b);
@@ -33,4 +33,8 @@ plot(x,y)
 
 k = boundary(x,y);
 head_area = inpolygon(X,Y,x(k),y(k));
+
+pre_image_out = image_in;
+pre_image_out(~head_area) = 0;
+pcolor(pre_image_out)
 end
