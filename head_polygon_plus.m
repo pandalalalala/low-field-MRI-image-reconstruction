@@ -9,7 +9,7 @@ if nargin < 2
     threshold = 0.55;
 end
 if nargin < 3
-    loos_parameter = 1.2;
+    loos_parameter = 1.12;
 end
 if nargin < 4
     polyfit_order = 3;

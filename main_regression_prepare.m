@@ -1,12 +1,12 @@
 % start: 4 April 2018 %tested on May 31st
-clc;
-clear;
-close all;
+% clc;
+% clear;
+% close all;
 %% get signals from simulation
 config
 images = import_images_june_2018(image_path, imformat, nlimit, ifresize, numrows, numcols);
 
-for k = 1:5
+for k = 1:2
 Obj_model = double(images{k});
 %     E_M = enc_gen(X,Y, B0_complete, dt, Sample_N, N_angle, coil_total,...
 %     Elev, r, Segment, I0, phi0, Pc, Azi, CurrentDir); % the encoding
