@@ -54,7 +54,7 @@ picture_IT2 = reshape(recon_image_IT ,pic_size,pic_size);
 [ssimval, ssimmap] = ssim(picture_IT2,normalize(Obj_model,'range'));  
 fprintf('The picture_IT2 SSIM value is %0.4f.\n',ssimval);
 
-%% TSVD
+%% TSVD boundary
 [recon_image_TSVD,error_TSVD_nn] = TSVD_boundary(E_M,Sign);
 picture_TSVD2 = reshape(recon_image_TSVD ,pic_size,pic_size);
 [peaksnrTSVD2,snrTSVD2] = psnr(picture_TSVD2,normalize(Obj_model,'range'));
