@@ -6,6 +6,7 @@ close all;
 config
 images = import_images_june_2018(image_path, imformat, nlimit, ifresize, numrows, numcols);
 Obj_model = double(images{1});
+Obj_model = Obj_model(:,:,1);
 %     E_M = enc_gen(X,Y, B0_complete, dt, Sample_N, N_angle, coil_total,...
 %     Elev, r, Segment, I0, phi0, Pc, Azi, CurrentDir); % the encoding
 %     matrix is problemetic on 21st June.
@@ -81,7 +82,7 @@ function [head_area, E_M] = preregulateSimpleBoundary(E_M,Sign)
     [pre_recon_image_IT,~]=Kaczmarz_su(E_M,Sign,1,3); % lambda = 1, max iteration is 2
     pic_size = sqrt(size(E_M,2)); % assume the reconstructed image to be squre
     picture_IT = reshape(pre_recon_image_IT ,pic_size,pic_size);
-    head_area = reshape(head_polygon_multiple(picture_IT,0.55),1,pic_size*pic_size);    
+    head_area = reshape(head_polygon(picture_IT,0.55),1,pic_size*pic_size);    
     E_M(:, ~head_area) = [];
 end
 
