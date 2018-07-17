@@ -18,7 +18,7 @@ for n_image = 1:length(images)
     head_area = inpolygon(X,Y,col(k),row(k));
 %     imwrite(images{n_image},[datapath, '\testbrain512\trainA\', int2str(n_image), '_A.jpg'])
     head_area3 = cat(3,head_area,head_area,head_area);
-    imwrite(head_area3,[datapath, '\testbrain512\trainB\', int2str(n_image), '_B.jpg'])
+    imwrite(head_area3,[datapath, '\testbrain512\testB\', int2str(n_image), '_B.jpg'])
     %     Obj_model(Obj_model(:,:) <threshold) = 0; 
 %     [Sign, Sign_time] = sig_gen_simul(Obj_model,E_M, dX, dY, dZ, gamma, Plank_h, T, k, N_per, N_angle, coil_total, Sample_N);
 % % image frame

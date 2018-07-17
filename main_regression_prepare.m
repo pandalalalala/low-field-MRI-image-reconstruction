@@ -6,7 +6,7 @@
 config
 images = import_images_june_2018(image_path, imformat, nlimit, ifresize, numrows, numcols);
 
-for k = 1:766
+for k = 1:10
 Obj_model = double(images{k});
 Obj_model = Obj_model(:,:,1);
 %     E_M = enc_gen(X,Y, B0_complete, dt, Sample_N, N_angle, coil_total,...
@@ -31,10 +31,11 @@ fprintf('The picture_IT SSIM value is %0.4f.\n',ssimval);
 picture_IT = imresize(picture_IT,[256,256]);
 picture_IT = cat(3,picture_IT,picture_IT,picture_IT);
 % imwrite(picture_IT, sprintf('G:\wenchuan\boundary\',%d_A.png',k))
-imwrite(picture_IT, ['G:\wenchuan\boundary\', int2str(k),'_A.jpg'])
+% imwrite(picture_IT, ['G:\wenchuan\boundary\', int2str(k),'_A.jpg'])
+imwrite(picture_IT,[datapath, '\testbrain512\testB\', int2str(k), '_A.jpg'])
 ssimmap = imresize(ssimmap,[256,256]);
 ssimmap = cat(3, ssimmap,ssimmap,ssimmap);
-imwrite(ssimmap, ['G:\wenchuan\ssimmap\', int2str(k),'_B.jpg'])
+% imwrite(ssimmap, ['G:\wenchuan\ssimmap\', int2str(k),'_B.jpg'])
 
 
 
