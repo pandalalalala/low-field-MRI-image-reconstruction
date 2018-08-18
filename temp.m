@@ -1,5 +1,5 @@
 function head_area = temp()
-Obj_model = imread('C:\Users\Wenchuan\Dropbox\imdataset\image_and_contour\1_A_fake_B.png');
+Obj_model = imread('C:\Users\Wenchuan\Dropbox\imdataset\nic\c2.png');
 Obj_model = imresize(Obj_model,[74, 74]);
 Obj_model = Obj_model(:,:,1);
 

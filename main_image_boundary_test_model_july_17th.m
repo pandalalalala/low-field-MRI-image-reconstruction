@@ -16,7 +16,7 @@ pic_size = sqrt(size(E_M,2)); % assume the reconstructed image to be squre
 [X_mri, Y_mri] = meshgrid(-pic_size/2+.5:pic_size/2-.5,-pic_size/2+.5:pic_size/2-.5);
 
 %% === Added noise ===
-Sign = add_noise(Sign, Sign_time, Sample_N, N_angle, Noise_level);
+% Sign = add_noise(Sign, Sign_time, Sample_N, N_angle, Noise_level);
 
 %% Least squares method 1
 [recon_image_LSM,error_LMS_nn] = LSMethod_gpu(E_M,Sign);
@@ -68,12 +68,21 @@ figure
 % subplot 242, pcolor(X_mri,Y_mri,Obj_model);                     shading flat; title('object','fontsize',12); xlabel('x(mm)','fontsize',12); ylabel('y(mm)','fontsize',12);pbaspect ([2 2 1])
 
 subplot 331, pcolor(X_mri,Y_mri,picture_LSM);                   shading flat; title('LSM,abs,no boundary','fontsize',12); xlabel('x(mm)','fontsize',12); ylabel('y(mm)','fontsize',12);pbaspect ([2 2 1])
+imwrite(picture_LSM,[image_path,'\lsm.png'])
 subplot 332, pcolor(X_mri,Y_mri,picture_IT);                    shading flat; title('Iteration,abs,no boundary','fontsize',12); xlabel('x(mm)','fontsize',12); ylabel('y(mm)','fontsize',12);pbaspect ([2 2 1])
+imwrite(picture_IT,[image_path,'\it.png'])
 subplot 333, pcolor(X_mri,Y_mri,picture_TSVD);                  shading flat; title('TSVD,abs,no boundary','fontsize',12); xlabel('x(mm)','fontsize',12); ylabel('y(mm)','fontsize',12);pbaspect ([2 2 1])
+imwrite(picture_TSVD,[image_path,'\tsvd.png'])
+
 %%
 subplot 334,pcolor(X_mri,Y_mri,picture_LSM2);                   shading flat;title('LSM,abs, with boundary restriction','fontsize',12);xlabel('x(mm)','fontsize',12);ylabel('y(mm)','fontsize',12);pbaspect ([2 2 1])% colormap gray;
+imwrite(picture_LSM2,[image_path,'\lsm2.png'])
+
 subplot 335,pcolor(X_mri,Y_mri,picture_IT2);                    shading flat; title('Iteration,abs, without boundary restriction','fontsize',12); xlabel('x(mm)','fontsize',12); ylabel('y(mm)','fontsize',12);pbaspect ([2 2 1])
+imwrite(picture_IT2,[image_path,'\it2.png'])
+
 subplot 336,pcolor(X_mri,Y_mri,picture_TSVD2);                  shading flat;title('TSVD with boundary restriction, abs','fontsize',12);xlabel('x(mm)','fontsize',12);ylabel('y(mm)','fontsize',12);pbaspect ([2 2 1])% colormap gray;
+imwrite(picture_TSVD2,[image_path,'\tsvd2.png'])
 
 
 
