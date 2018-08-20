@@ -16,7 +16,7 @@ pic_size = sqrt(size(E_M,2)); % assume the reconstructed image to be squre
 [X_mri, Y_mri] = meshgrid(-pic_size/2+.5:pic_size/2-.5,-pic_size/2+.5:pic_size/2-.5);
 
 %% === Added noise ===
-% Sign = add_noise(Sign, Sign_time, Sample_N, N_angle, Noise_level);
+Sign = add_noise(Sign, Sign_time, Sample_N, N_angle, Noise_level);
 
 %% Least squares method 1
 [recon_image_LSM,error_LMS_nn] = LSMethod_gpu(E_M,Sign);
