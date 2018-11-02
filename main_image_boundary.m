@@ -26,7 +26,7 @@ picture_LSM = reshape(recon_image_LSM ,pic_size,pic_size);
 fprintf('The LSM SSIM value is %0.4f.\n',ssimval);
 
 %% iteration Kaczmarz_su
-[recon_image_IT,error_IT_nn]=Kaczmarz_su(E_M,Sign,1,10); % lambda = 1, max iteration is 10
+[recon_image_IT,error_IT_nn]=Kaczmarz_su(E_M,Sign,1,3); % lambda = 1, max iteration is 10
 picture_IT = reshape(recon_image_IT ,pic_size,pic_size);
 [peaksnrIT,snrIT] = psnr(picture_IT,normalize(Obj_model,'range'));
 [ssimval, ssimmap] = ssim(picture_IT,normalize(Obj_model,'range'));  

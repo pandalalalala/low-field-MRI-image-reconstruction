@@ -22,7 +22,7 @@ for i =1:nfiles
 end
 if ifresize
     for i =1:nfiles
-        images{i} = imresize(images{i},[numrows numcols]);
+        images{i} = imresize(images{i},[numrows numcols], 'nearest');
     end
 end
 end
